@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="png" href="icon.png">
+    <title>School Progress</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            overflow: hidden;
+            margin: 0;
+        }
+        #title {
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 0 0 20px white;
+        }
+        #progress {
+            font-size: 4rem;
+            font-weight: bold;
+            text-shadow: 0 0 20px white;
+        }
+    </style>
+</head>
+<body>
+    <div id="title">School Progress:</div>
+    <div id="progress">Lade...</div>
+    <script>
+        function getSchoolProgress() {
+            const now = new Date();
+            const day = now.getDay(); // 0=Sonntag, 1=Montag, ..., 6=Samstag
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            
+            const schedule = {
+                1: { start: 8 * 60, end: 13 * 60 + 10 },
+                2: { start: 8 * 60, end: 13 * 60 + 10 },
+                3: { start: 8 * 60, end: 13 * 60 + 10 },
+                4: { start: 8 * 60, end: 17 * 60 + 30 },
+                5: { start: 8 * 60, end: 13 * 60 + 10 }
+            };
+            
+            if (day === 0 || day === 6 || !(day in schedule)) {
+                return 100;
+            }
+            
+            const { start, end } = schedule[day];
+            const currentMinutes = hours * 60 + minutes;
+            
+            if (currentMinutes < start) return 0;
+            if (currentMinutes > end) return 100;
+            
+            return Math.round(((currentMinutes - start) / (end - start)) * 100);
+        }
+        
+        function updateProgress() {
+            const progress = getSchoolProgress();
+            const progressElement = document.getElementById("progress");
+            progressElement.textContent = progress + "%";
+            
+            const color = `hsl(${progress}, 100%, 50%)`;
+            progressElement.style.color = color;
+            progressElement.style.textShadow = `0 0 20px ${color}`;
+        }
+        
+        updateProgress();
+        setInterval(updateProgress, 60000); // reload 1 every min
+    </script>
+</body>
+</html>
